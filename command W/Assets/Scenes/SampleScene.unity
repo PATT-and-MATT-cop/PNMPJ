@@ -336,7 +336,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!65 &1018563810
 BoxCollider:
@@ -430,8 +430,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraArm: {fileID: 1284547328}
-  speed: 3
+  speed: 6
   jump: 10
+  Foxspeed: 2
+  Foxtime: 0.4
   turnspeed: 5
 --- !u!1 &1284547327
 GameObject:
