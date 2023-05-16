@@ -21,6 +21,7 @@ public class player : MonoBehaviour
 
     bool jDown;
     bool fDown;
+    bool rDown;
 
     Rigidbody rigid;
 
@@ -46,6 +47,7 @@ public class player : MonoBehaviour
         vAxis = Input.GetAxisRaw("Vertical");
         jDown = Input.GetButton("Jump");
         fDown = Input.GetButtonDown("Fox");
+        rDown = Input.GetButton("Run");
     }
 
 
@@ -55,7 +57,7 @@ public class player : MonoBehaviour
         if(isFox) {
             moveVec = FoxVec;
         }
-        if(!isFox) {
+        if(!isFox && !rDown) {
             Vector2 moveInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             bool isMove = moveInput.magnitude != 0;
 
@@ -64,6 +66,16 @@ public class player : MonoBehaviour
             Vector3 moveDir = lookForward * moveInput.y + lookRight * moveInput.x;
             
             move = moveDir * Time.deltaTime * speed;
+        }
+        if(rDown && !isFox) {
+            Vector2 moveInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            bool isMove = moveInput.magnitude != 0;
+
+            Vector3 lookForward = new Vector3(cameraArm.forward.x, 0f, cameraArm.forward.z).normalized;
+            Vector3 lookRight = new Vector3(cameraArm.right.x, 0f, cameraArm.right.z).normalized;
+            Vector3 moveDir = lookForward * moveInput.y + lookRight * moveInput.x;
+            
+            move = moveDir * Time.deltaTime * speed * 1.3f;
         }
 
         transform.position += move;
