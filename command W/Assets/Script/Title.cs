@@ -7,7 +7,7 @@ public class Title : MonoBehaviour
 {
     void Start()
     {
-        SceneManager.LoadScene("Title");
+        
     }
 
     void Update()
