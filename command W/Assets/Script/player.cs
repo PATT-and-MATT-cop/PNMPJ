@@ -67,6 +67,7 @@ public class player : MonoBehaviour
             
             move = moveDir * Time.deltaTime * speed;
         }
+
         if(rDown && !isFox) {
             Vector2 moveInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             bool isMove = moveInput.magnitude != 0;
@@ -110,14 +111,6 @@ public class player : MonoBehaviour
     {
         if(fDown && !isFox && !isJump && move != Vector3.zero) {
             speed *= Foxspeed;
-            Vector2 moveInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-            bool isMove = moveInput.magnitude != 0;
-
-            Vector3 lookForward = new Vector3(cameraArm.forward.x, 0f, cameraArm.forward.z).normalized;
-            Vector3 lookRight = new Vector3(cameraArm.right.x, 0f, cameraArm.right.z).normalized;
-            Vector3 moveDir = lookForward * moveInput.y + lookRight * moveInput.x;
-            
-            move = moveDir * Time.deltaTime * speed;
             
             isFox = true;
             Debug.Log("adsad");
