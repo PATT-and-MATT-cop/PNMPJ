@@ -5,33 +5,39 @@ using UnityEngine;
 public class player : MonoBehaviour
 {
     [SerializeField]
+    private Transform characterBody;
+    [SerializeField]
     private Transform cameraArm;
 
     public float speed;
     public float jump;
     public float Foxspeed;
     public float Foxtime;
+    public float run;
     
-    float hAxis;
-    float vAxis;
+    bool hAxis;
+    bool vAxis;
     public float turnspeed;
 
     bool isJump;
     bool isFox;
+    bool isRun;
 
     bool jDown;
     bool fDown;
     bool rDown;
 
+    Animator anim;
+
     Rigidbody rigid;
 
     Vector3 FoxVec;
     Vector3 moveVec;
-    Vector3 move;
 
     void Awake()
     {
         rigid = GetComponent<Rigidbody>();
+        anim = characterBody.GetComponent<Animator>();
     }
     void Update()
     {
@@ -43,8 +49,8 @@ public class player : MonoBehaviour
     }
     void GetInput()
     {
-        hAxis = Input.GetAxisRaw("Horizontal");
-        vAxis = Input.GetAxisRaw("Vertical");
+        hAxis = Input.GetButtonDown("Horizontal");
+        vAxis = Input.GetButtonDown("Vertical");
         jDown = Input.GetButton("Jump");
         fDown = Input.GetButtonDown("Fox");
         rDown = Input.GetButton("Run");
@@ -57,29 +63,28 @@ public class player : MonoBehaviour
         if(isFox) {
             moveVec = FoxVec;
         }
-        if(!isFox && !rDown) {
+        if(!isFox) {
             Vector2 moveInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             bool isMove = moveInput.magnitude != 0;
+            if(isMove)
+            {
+                Vector3 lookForward = new Vector3(cameraArm.forward.x, 0f, cameraArm.forward.z).normalized;
+                Vector3 lookRight = new Vector3(cameraArm.right.x, 0f, cameraArm.right.z).normalized;
+                Vector3 moveDir = lookForward * moveInput.y + lookRight * moveInput.x;
 
-            Vector3 lookForward = new Vector3(cameraArm.forward.x, 0f, cameraArm.forward.z).normalized;
-            Vector3 lookRight = new Vector3(cameraArm.right.x, 0f, cameraArm.right.z).normalized;
-            Vector3 moveDir = lookForward * moveInput.y + lookRight * moveInput.x;
+                characterBody.forward = moveDir;
             
-            move = moveDir * Time.deltaTime * speed;
+                if(rDown) {
+                    moveVec = moveDir * Time.deltaTime * speed * run;
+                }
+                else {
+                    moveVec = moveDir * Time.deltaTime * speed;
+                }
+            }
         }
-
-        if(rDown && !isFox) {
-            Vector2 moveInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-            bool isMove = moveInput.magnitude != 0;
-
-            Vector3 lookForward = new Vector3(cameraArm.forward.x, 0f, cameraArm.forward.z).normalized;
-            Vector3 lookRight = new Vector3(cameraArm.right.x, 0f, cameraArm.right.z).normalized;
-            Vector3 moveDir = lookForward * moveInput.y + lookRight * moveInput.x;
-            
-            move = moveDir * Time.deltaTime * speed * 1.3f;
-        }
-
-        transform.position += move;
+        transform.position += moveVec;
+        anim.SetBool("isRun", moveVec != Vector3.zero && rDown);
+        anim.SetBool("isWalk", moveVec != Vector3.zero && !rDown);
     }
     //3인칭 카메라
     void LookAround()
@@ -109,21 +114,22 @@ public class player : MonoBehaviour
     }
     void Fox()
     {
-        if(fDown && !isFox && !isJump && move != Vector3.zero) {
-            speed *= Foxspeed;
+        if(fDown && !isFox && !isJump && moveVec != Vector3.zero) {
+            moveVec *= Foxspeed;
+            FoxVec = moveVec;
             
             isFox = true;
-            Debug.Log("adsad");
+            Debug.Log("외않됨?");
 
             Invoke("FoxOut", Foxtime);
         }
         if (isFox) {
-            FoxVec = move;
+            FoxVec = moveVec;
         }
     }
     void FoxOut()
     {
-        speed /= Foxspeed;
+        moveVec /= Foxspeed;
         isFox = false;
     }
     void OnCollisionEnter(Collision collision)
